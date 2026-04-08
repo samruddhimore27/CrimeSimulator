@@ -1,9 +1,11 @@
 import { create } from 'zustand';
 import { getCaseById } from '../data/cases';
+import { supabase } from '../lib/supabase';
+import { useAuthStore } from './authStore';
 
 const INITIAL_STATE = {
   // Navigation
-  gamePhase: 'home', // 'home' | 'briefing' | 'playing' | 'accusing' | 'result'
+  gamePhase: 'home', // 'home' | 'briefing' | 'playing' | 'accusing' | 'result' | 'leaderboard'
   currentCaseId: null,
   currentCase: null,
 
@@ -35,6 +37,7 @@ export const useGameStore = create((set, get) => ({
   // ── NAVIGATION ──────────────────────────────────────────
 
   goHome: () => set({ ...INITIAL_STATE }),
+  goLeaderboard: () => set({ ...INITIAL_STATE, gamePhase: 'leaderboard' }),
 
   selectCase: (caseId) => {
     const caseData = getCaseById(caseId);
@@ -173,6 +176,34 @@ export const useGameStore = create((set, get) => ({
         isCorrect,
       },
     });
+
+    // Sync to Supabase
+    const user = useAuthStore.getState().user;
+    if (user) {
+      (async () => {
+        try {
+          if (isCorrect) {
+            await supabase.from('solved_cases_log').insert({
+              user_id: user.id,
+              case_id: currentCase.id,
+              score_earned: totalScore,
+            });
+          }
+
+          const { data: currentStats } = await supabase.from('user_stats').select('*').eq('id', user.id).single();
+          if (currentStats) {
+            await supabase.from('user_stats').update({
+              total_score: (currentStats.total_score || 0) + totalScore,
+              cases_solved_count: (currentStats.cases_solved_count || 0) + (isCorrect ? 1 : 0)
+            }).eq('id', user.id);
+            
+            useAuthStore.getState().fetchUserStats(user.id);
+          }
+        } catch (err) {
+          console.error('Supabase sync error', err);
+        }
+      })();
+    }
   },
 
   endGame: (suspectId) => {
