@@ -4,6 +4,7 @@ import { useTimer } from '../../hooks/useTimer';
 
 export function Timer() {
   const { timeRemaining, formatTime, urgencyLevel } = useTimer();
+
   const isCritical = urgencyLevel === 'critical';
   const isWarning  = urgencyLevel === 'warning';
 
