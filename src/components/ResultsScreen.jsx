@@ -23,20 +23,14 @@ export function ResultsScreen() {
   const grade = getGrade(score, isCorrect);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Atmospheric BG */}
-      <div className={`fixed inset-0 transition-colors duration-1000 ${
-        isCorrect
-          ? 'bg-linear-to-br from-emerald-950 via-[#060810] to-[#060810]'
-          : 'bg-linear-to-br from-red-950 via-[#060810] to-[#060810]'
-      }`} />
+    <div className="results-min-h-screen">
+      <div className={`results-bg ${isCorrect ? 'correct' : 'wrong'}`} />
 
-      {/* Particle ring (decorative) */}
-      <div className="fixed inset-0 pointer-events-none">
+      <div className="results-particles">
         {Array.from({ length: 8 }).map((_, i) => (
           <motion.div
             key={i}
-            className={`absolute w-1.5 h-1.5 rounded-full ${isCorrect ? 'bg-emerald-400' : 'bg-red-400'}`}
+            className={`particle-dot ${isCorrect ? 'particle-correct' : 'particle-wrong'}`}
             style={{
               left: `${20 + Math.random() * 60}%`,
               top:  `${20 + Math.random() * 60}%`,
@@ -60,23 +54,18 @@ export function ResultsScreen() {
         initial={{ opacity: 0, scale: 0.88, y: 32 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ type: 'spring', damping: 20, stiffness: 240 }}
-        className="relative z-10 max-w-xl w-full"
+        className="results-modal"
       >
-        {/* Verdict banner */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className={`text-center py-6 px-8 rounded-t-2xl border-t border-x ${
-            isCorrect
-              ? 'bg-emerald-900/30 border-emerald-500/30'
-              : 'bg-red-900/30 border-red-500/30'
-          }`}
+          className={`results-verdict-banner ${isCorrect ? 'correct' : 'wrong'}`}
         >
           <motion.div
             animate={{ rotate: isCorrect ? [0, -5, 5, 0] : [0, -2, 2, 0] }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="text-6xl mb-3"
+            className="results-emoji"
           >
             {isCorrect ? '🎉' : '💀'}
           </motion.div>
@@ -85,50 +74,43 @@ export function ResultsScreen() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className={`text-3xl font-bold mb-1 font-serif ${
-              isCorrect ? 'text-emerald-300 text-glow-purple' : 'text-red-300 text-glow-red'
-            }`}
+            className={`results-title ${isCorrect ? 'results-title-correct' : 'results-title-wrong'}`}
           >
             {isCorrect ? 'Case Solved!' : 'Wrong Suspect'}
           </motion.h1>
 
-          <p className="text-slate-400 text-sm">{grade.message}</p>
+          <p className="results-msg">{grade.message}</p>
         </motion.div>
 
-        {/* Score body */}
-        <div className="glass-card-elevated rounded-b-2xl rounded-t-none border-x border-b border-white/8 p-6 space-y-5">
-
-          {/* Grade + Score */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        <div className="results-body">
+          <div className="results-grade-wrap">
+            <div className="results-grade-inner">
               <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl font-black border-2"
+                className="results-grade-mark"
                 style={{ color: grade.color, borderColor: grade.color, background: `${grade.color}15` }}
               >
                 {grade.label}
               </div>
               <div>
-                <div className="text-2xl font-black font-mono text-white">{score.toLocaleString()}</div>
-                <div className="text-xs text-slate-500">Total Score</div>
+                <div className="results-score-val">{score.toLocaleString()}</div>
+                <div className="results-score-lbl">Total Score</div>
               </div>
             </div>
-            <Trophy size={32} className="text-amber-400/50" />
+            <Trophy size={32} className="results-trophy" />
           </div>
 
-          {/* Score breakdown */}
-          <div className="space-y-2">
+          <div className="results-breakdown">
             <ScoreLine icon={<Search size={13} />} label="Evidence Discovered" value={scoreBreakdown.evidencePoints} color="purple" />
             <ScoreLine icon={<Link size={13} />}   label="Connections Made"    value={scoreBreakdown.connectionPoints} color="cyan" />
             <ScoreLine icon={<Clock size={13} />}  label="Time Bonus"          value={scoreBreakdown.timeBonus} color="amber" />
             <ScoreLine icon={<Star size={13} />}   label="Accuracy Bonus"      value={scoreBreakdown.accuracyBonus} color={isCorrect ? 'emerald' : 'red'} />
-            <div className="border-t border-white/8 pt-2 flex justify-between items-center">
-              <span className="text-sm font-semibold text-slate-300">Final Score</span>
-              <span className="text-xl font-black font-mono text-white">{score.toLocaleString()}</span>
+            <div className="results-final-score">
+              <span className="results-final-lbl">Final Score</span>
+              <span className="results-final-val">{score.toLocaleString()}</span>
             </div>
           </div>
 
-          {/* Accused vs Correct reveal */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="results-comparisons">
             <VerdictCard
               label="You Accused"
               suspect={accused}
@@ -143,37 +125,23 @@ export function ResultsScreen() {
             />
           </div>
 
-          {/* Case solution desc */}
           {!isCorrect && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="p-3 rounded-xl bg-red-500/8 border border-red-500/20 text-xs text-slate-300 leading-relaxed"
+              className="results-solution"
             >
-              <p className="font-semibold text-red-400 mb-1">What really happened:</p>
+              <p className="sol-lbl">What really happened:</p>
               {correct?.motive}
             </motion.div>
           )}
 
-          {/* Actions */}
-          <div className="flex gap-3 pt-1">
-            <Button
-              variant="ghost"
-              size="md"
-              onClick={goHome}
-              className="flex-1"
-              icon={<ArrowLeft size={14} />}
-            >
+          <div className="results-actions">
+            <Button variant="ghost" size="md" onClick={goHome} className="flex-1" icon={<ArrowLeft size={14} />}>
               Case Select
             </Button>
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => selectCase(currentCase.id)}
-              className="flex-1"
-              icon={<RotateCcw size={14} />}
-            >
+            <Button variant="primary" size="md" onClick={() => selectCase(currentCase.id)} className="flex-1" icon={<RotateCcw size={14} />}>
               Play Again
             </Button>
           </div>
@@ -184,20 +152,14 @@ export function ResultsScreen() {
 }
 
 function ScoreLine({ icon, label, value, color }) {
-  const colors = {
-    purple:  'text-purple-400',
-    cyan:    'text-cyan-400',
-    amber:   'text-amber-400',
-    emerald: 'text-emerald-400',
-    red:     'text-red-400',
-  };
+  const cClass = `text-${color}-400`;
   return (
-    <div className="flex items-center justify-between text-xs">
-      <div className="flex items-center gap-2 text-slate-400">
-        <span className={colors[color]}>{icon}</span>
+    <div className="results-score-line">
+      <div className="results-line-lbl">
+        <span className={cClass}>{icon}</span>
         {label}
       </div>
-      <span className={`font-mono font-semibold ${colors[color]}`}>+{value}</span>
+      <span className={`results-line-val ${cClass}`}>+{value}</span>
     </div>
   );
 }
@@ -205,20 +167,16 @@ function ScoreLine({ icon, label, value, color }) {
 function VerdictCard({ label, suspect, isCorrect, type }) {
   if (!suspect) return null;
   const isAccused = type === 'accused';
+  let vcClass = 'vc-neutral';
+  if (isAccused && !isCorrect) vcClass = 'vc-wrong';
+  else if (isAccused && isCorrect) vcClass = 'vc-correct';
+
   return (
-    <div
-      className={`p-3 rounded-xl border text-center ${
-        isAccused && !isCorrect
-          ? 'border-red-500/30 bg-red-500/8'
-          : isAccused && isCorrect
-          ? 'border-emerald-500/30 bg-emerald-500/8'
-          : 'border-purple-500/30 bg-purple-500/8'
-      }`}
-    >
-      <div className="text-[10px] text-slate-500 mb-1">{label}</div>
-      <div className="text-2xl mb-0.5">{suspect.photo}</div>
-      <div className="text-xs font-semibold text-slate-200">{suspect.name}</div>
-      <div className="text-[10px] text-slate-500">{suspect.occupation}</div>
+    <div className={`verdict-card ${vcClass}`}>
+      <div className="vc-lbl">{label}</div>
+      <div className="vc-photo">{suspect.photo}</div>
+      <div className="vc-name">{suspect.name}</div>
+      <div className="vc-occ">{suspect.occupation}</div>
     </div>
   );
 }

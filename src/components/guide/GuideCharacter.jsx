@@ -22,12 +22,12 @@ export const GuideCharacter = () => {
   }, [gamePhase, currentCase, startBriefing, agentSpeak]);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-end justify-end pointer-events-none">
+    <div className="guide-char-wrap">
       
-      {/* Dialog box wrapper - Massive side by side scaling */}
+      {/* Dialog box wrapper */}
       <AnimatePresence>
         {isOpen && !isDormant && (
-          <div className="mr-6 mb-4 pointer-events-auto">
+          <div className="guide-dialog-outer">
             <GuideDialog />
           </div>
         )}
@@ -45,28 +45,27 @@ export const GuideCharacter = () => {
               y: 0 
             }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className={`relative group flex items-center justify-center rounded-2xl shadow-2xl pointer-events-auto transition-transform ${isDormant ? 'hover:scale-95 cursor-pointer' : 'animate-float cursor-default'}`}
+            className={`gc-btn-active ${isDormant ? 'gc-btn-dormant' : 'gc-btn-playing animate-float'}`}
           >
             {/* Glow / Pulse Rings */}
-            <div className="absolute inset-0 rounded-2xl bg-violet-600/30 animate-ping-slow pointer-events-none" />
-            <div className={`absolute inset-0 rounded-2xl bg-violet-500/50 blur-xl transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0'} pointer-events-none`} />
+            <div className="gc-ping" />
+            <div className={`gc-blur ${isOpen ? 'opacity-100' : 'opacity-0'}`} />
 
-            {/* Character Base - Large Human Portrait */}
-            <div className="relative w-40 h-40 md:w-56 md:h-56 rounded-2xl bg-gradient-to-br from-violet-900 to-slate-900 border border-violet-500 flex items-center justify-center shadow-[0_0_40px_rgba(139,92,246,0.4)] z-10 overflow-hidden group-hover:border-violet-400 transition-colors">
+            {/* Character Base */}
+            <div className="gc-avatar-box">
               <img 
                 src="/agent.png" 
                 alt="Agent Assistant" 
-                className="absolute inset-0 w-full h-full object-cover object-top opacity-95 group-hover:opacity-100 transition-opacity mix-blend-lighten"
+                className="gc-img"
               />
-              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
+              <div className="gc-gradient-overlay" />
 
               {/* Fake AI "Sparkles"/Processing overlay */}
               {!isDormant && (
                 <motion.div 
-                  className="absolute z-20 text-violet-300"
+                  className="gc-sparkles"
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
-                  style={{ top: "12px", right: "12px" }}
                 >
                   <Sparkles size={20} />
                 </motion.div>
@@ -75,7 +74,7 @@ export const GuideCharacter = () => {
 
             {/* Inactive / Hover prompt for Dormant Mode */}
             {isDormant && (
-              <div className="absolute opacity-0 group-hover:opacity-100 -top-12 right-0 whitespace-nowrap bg-slate-900 border border-violet-500/30 text-sm font-semibold text-violet-200 px-4 py-2 rounded-lg shadow-xl transition-opacity pointer-events-none">
+              <div className="gc-prompt">
                 Call Assistant
               </div>
             )}

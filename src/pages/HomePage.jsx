@@ -23,7 +23,7 @@ export function HomePage() {
   const heroRef = useRef(null);
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#030508]">
+    <div className="home-page">
 
       {/* ── ATMOSPHERIC BG LAYERS ── */}
       <AtmosphericBackground />
@@ -32,13 +32,13 @@ export function HomePage() {
       <BloodMarks />
 
       {/* ── CRIME TICKER TAPE (top) ── */}
-      <div className="relative z-20 w-full overflow-hidden border-b border-amber-500/15 bg-amber-500/3 py-1.5">
+      <div className="home-ticker">
         <div className="ticker-wrap">
           <div className="ticker-inner">
             {TICKER_ITEMS.map((item, i) => (
-              <span key={i} className="inline-flex items-center gap-2 mx-8 text-[10px] font-mono font-semibold text-amber-400/70 tracking-widest uppercase">
+              <span key={i} className="ticker-item">
                 {item}
-                <span className="w-1 h-1 rounded-full bg-amber-500/40 mx-2"></span>
+                <span className="ticker-dot"></span>
               </span>
             ))}
           </div>
@@ -46,23 +46,23 @@ export function HomePage() {
       </div>
 
       {/* ── HEADER ── */}
-      <header className="relative z-20 flex items-center justify-between px-8 py-5">
+      <header className="app-header">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
-          className="flex items-center gap-3"
+          className="header-brand"
         >
           {/* Logo badge */}
-          <div className="relative">
-            <div className="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center glow-purple">
-              <Shield size={18} className="text-purple-400" />
+          <div style={{ position: 'relative' }}>
+            <div className="header-logo-badge glow-purple">
+              <Shield size={18} style={{ color: "var(--accent-purple)" }} />
             </div>
-            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#030508] animate-pulse"></span>
+            <span className="logo-pulse-dot"></span>
           </div>
           <div>
-            <div className="text-sm font-bold text-white tracking-widest font-display">CRIMEFILES</div>
-            <div className="text-[9px] text-purple-400/60 font-mono tracking-[0.25em] uppercase">Detective Simulator</div>
+            <div className="header-title">CRIMEFILES</div>
+            <div className="header-subtitle">Detective Simulator</div>
           </div>
         </motion.div>
 
@@ -70,27 +70,27 @@ export function HomePage() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
-          className="flex items-center gap-3"
+          className="header-status"
         >
           {/* Live indicator */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-            <span className="text-[10px] font-mono font-semibold text-red-400 tracking-widest">LIVE</span>
+          <div className="status-chip live hidden-sm-down">
+            <span className="status-dot"></span>
+            <span>LIVE</span>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/4 border border-white/8">
-            <Zap size={11} className="text-amber-400" />
-            <span className="text-[10px] text-slate-400 font-semibold">Hackathon Edition</span>
+          <div className="status-chip edition">
+            <Zap size={11} style={{ color: "var(--accent-amber)" }} />
+            <span>Hackathon Edition</span>
           </div>
         </motion.div>
       </header>
 
       {/* ── HERO SECTION ── */}
-      <section ref={heroRef} className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-8 pb-12 hero-grid">
+      <section ref={heroRef} className="hero-section hero-grid">
 
         {/* Decorative ring */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[700px] h-[700px] rounded-full border border-purple-500/5 animate-spin-slow" />
-          <div className="absolute w-[500px] h-[500px] rounded-full border border-purple-500/4" style={{ animation: 'spin-slow 12s linear infinite reverse' }} />
+        <div className="hero-rings">
+          <div className="hero-ring-inner animate-spin-slow" />
+          <div className="hero-ring-outer" style={{ animation: 'spin-slow 12s linear infinite reverse' }} />
         </div>
 
         {/* Case file badge */}
@@ -98,10 +98,10 @@ export function HomePage() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="mb-6 flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/8 border border-purple-500/20"
+          className="hero-badge"
         >
-          <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse inline-block"></span>
-          <span className="text-xs font-semibold font-mono text-purple-300 tracking-widest uppercase">Interactive Case Files · 3 Active Investigations</span>
+          <span className="hero-badge-pulse"></span>
+          <span>Interactive Case Files · 3 Active Investigations</span>
         </motion.div>
 
         {/* Main title */}
@@ -109,23 +109,23 @@ export function HomePage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center mb-6"
+          className="hero-title"
         >
           {/* GLOWING ICON */}
           <motion.div
             animate={{ scale: [1, 1.06, 1], filter: ['drop-shadow(0 0 20px rgba(139,92,246,0.4))', 'drop-shadow(0 0 40px rgba(139,92,246,0.8))', 'drop-shadow(0 0 20px rgba(139,92,246,0.4))'] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            className="text-7xl mb-6 block animate-float"
+            className="hero-emoji animate-float"
           >
             🔍
           </motion.div>
 
-          <h1 className="font-display text-[72px] md:text-[96px] leading-none tracking-tight mb-4">
+          <h1>
             <motion.span
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="block shimmer-text"
+              className="title-word shimmer-text"
             >
               CRIME
             </motion.span>
@@ -133,7 +133,8 @@ export function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="block text-white text-glow-white"
+              className="title-word text-glow-white"
+              style={{ color: '#fff' }}
             >
               INVESTIGATION
             </motion.span>
@@ -141,8 +142,7 @@ export function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="block text-white/30 text-[40px] md:text-[52px]"
-              style={{ letterSpacing: '1rem' }}
+              className="title-word title-simulator"
             >
               SIMULATOR
             </motion.span>
@@ -152,10 +152,10 @@ export function HomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-slate-400 text-base md:text-lg max-w-lg mx-auto leading-relaxed"
+            className="hero-subtitle"
           >
             Analyse evidence. Expose contradictions.
-            <span className="text-purple-300"> Name the culprit</span> before time runs out.
+            <span style={{ color: "var(--accent-purple)" }}> Name the culprit</span> before time runs out.
           </motion.p>
         </motion.div>
 
@@ -164,7 +164,7 @@ export function HomePage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="flex items-center gap-0 mb-14 rounded-2xl overflow-hidden border border-white/6 bg-white/2"
+          className="hero-stats"
         >
           {[
             { value: '3', label: 'Cases', icon: '📁' },
@@ -173,12 +173,12 @@ export function HomePage() {
             { value: '15–20m', label: 'Per Case', icon: '⏱' },
           ].map((stat, i) => (
             <React.Fragment key={stat.label}>
-              <div className="px-7 py-4 text-center">
-                <div className="text-xs mb-1">{stat.icon}</div>
-                <div className="text-xl font-black font-mono text-purple-300">{stat.value}</div>
-                <div className="text-[10px] text-slate-600 uppercase tracking-wider">{stat.label}</div>
+              <div className="stat-item">
+                <div className="stat-icon">{stat.icon}</div>
+                <div className="stat-value">{stat.value}</div>
+                <div className="stat-label">{stat.label}</div>
               </div>
-              {i < 3 && <div className="w-px h-10 bg-white/6" />}
+              {i < 3 && <div className="stat-divider" />}
             </React.Fragment>
           ))}
         </motion.div>
@@ -187,31 +187,31 @@ export function HomePage() {
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="flex flex-col items-center gap-1 text-slate-700"
+          className="scroll-indicator"
         >
-          <span className="text-[10px] font-mono tracking-widest">SELECT CASE</span>
-          <ChevronRight size={14} className="rotate-90" />
+          <span>SELECT CASE</span>
+          <ChevronRight size={14} style={{ transform: 'rotate(90deg)' }} />
         </motion.div>
       </section>
 
       {/* ── CASE SELECTION ── */}
-      <section className="relative z-10 px-6 pb-8 max-w-6xl mx-auto w-full">
+      <section className="case-selection">
         {/* Decorative label */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7 }}
-          className="flex items-center gap-4 mb-8"
+          className="case-label-row"
         >
-          <div className="flex-1 h-px bg-linear-to-r from-transparent to-purple-500/20" />
-          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-purple-500/20 bg-purple-500/5">
-            <Eye size={12} className="text-purple-400" />
-            <span className="text-[11px] font-mono text-purple-400 tracking-widest uppercase">Active Case Files</span>
+          <div className="case-line-left" />
+          <div className="case-label-chip">
+            <Eye size={12} style={{ color: "var(--accent-purple)" }} />
+            <span>Active Case Files</span>
           </div>
-          <div className="flex-1 h-px bg-linear-to-l from-transparent to-purple-500/20" />
+          <div className="case-line-right" />
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="case-grid">
           {CASES.map((c, i) => (
             <PremiumCaseCard
               key={c.id}
@@ -227,12 +227,12 @@ export function HomePage() {
       </section>
 
       {/* ── CRIME TAPE FOOTER ── */}
-      <div className="relative z-10 mt-auto">
-        <div className="crime-tape h-4 opacity-30" />
-        <footer className="bg-[#030508] border-t border-white/4 py-5 text-center">
-          <span className="text-slate-700 text-xs font-mono tracking-widest">
+      <div className="footer-wrap">
+        <div className="crime-tape footer-tape" />
+        <footer className="footer-content">
+          <span>
             BUILT WITH ❤ BY{' '}
-            <span className="text-purple-500/70 font-bold tracking-[0.3em]">PASTA</span>
+            <span className="footer-brand">PASTA</span>
           </span>
         </footer>
       </div>
@@ -263,7 +263,7 @@ const SPATTERS = [
 
 function BloodMarks() {
   return (
-    <div className="fixed inset-0 pointer-events-none z-5 overflow-hidden">
+    <div className="blood-marks-container">
       {/* ── Top-edge blood drips  ────────────────── */}
       {DRIPS.map((d) => (
         <motion.div
@@ -312,7 +312,7 @@ function BloodMarks() {
 
       {/* ── Blood splatter blobs ─────────────────── */}
       <svg
-        className="absolute inset-0 w-full h-full"
+        className="blood-svg-layer"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid slice"
@@ -346,8 +346,6 @@ function BloodMarks() {
             {[...Array(5)].map((_, j) => {
               const angle = (j / 5) * Math.PI * 2;
               const dist  = s.r * 0.025 + j * 0.004;
-              const mx    = `calc(${s.cx} + ${Math.cos(angle) * dist}%)`;
-              const my    = `calc(${s.cy} + ${Math.sin(angle) * dist}%)`;
               return (
                 <motion.circle
                   key={j}
@@ -400,11 +398,8 @@ function BloodMarks() {
         transition={{ delay: 4.5, duration: 1.2 }}
         style={{ position: 'absolute', left: '-8px', top: '38%', width: 60, height: 90 }}
       >
-        {/* Palm */}
         <ellipse cx="30" cy="65" rx="18" ry="20" fill="#8b0000" filter="url(#blood-blur)" />
-        {/* Thumb */}
         <ellipse cx="10" cy="58" rx="6" ry="10" fill="#8b0000" transform="rotate(-30 10 58)" />
-        {/* Fingers */}
         <ellipse cx="16" cy="38" rx="5" ry="14" fill="#8b0000" transform="rotate(-10 16 38)" />
         <ellipse cx="26" cy="32" rx="5" ry="15" fill="#8b0000" />
         <ellipse cx="36" cy="33" rx="5" ry="14" fill="#8b0000" transform="rotate(5 36 33)" />
@@ -447,29 +442,22 @@ function BloodMarks() {
 
 function AtmosphericBackground() {
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div className="atmospheric-bg">
       {/* Deep purple nebula */}
-      <div className="absolute top-[-30%] left-[-20%] w-[900px] h-[900px] rounded-full opacity-30"
-        style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.15) 0%, rgba(139,92,246,0.05) 50%, transparent 70%)' }} />
+      <div className="nebula-purple" />
       {/* Red tint bottom right */}
-      <div className="absolute bottom-[-20%] right-[-15%] w-[700px] h-[700px] rounded-full opacity-20"
-        style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.12) 0%, transparent 70%)' }} />
+      <div className="nebula-red" />
       {/* Cyan accent */}
-      <div className="absolute top-[35%] right-[20%] w-[400px] h-[400px] rounded-full opacity-15"
-        style={{ background: 'radial-gradient(circle, rgba(6,182,212,0.09) 0%, transparent 70%)' }} />
+      <div className="nebula-cyan" />
 
       {/* Scanline effect */}
-      <div className="absolute inset-0 opacity-30"
-        style={{
-          background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px)'
-        }}
-      />
+      <div className="scanline-overlay" />
 
       {/* Floating orbs */}
       {[...Array(5)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute rounded-full"
+          className="floating-orb"
           style={{
             width: 3 + i * 2,
             height: 3 + i * 2,
@@ -499,37 +487,37 @@ function PremiumCaseCard({ caseData, index, isHovered, onHover, onLeave, onSelec
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
       onClick={onSelect}
-      className="relative cursor-pointer group"
+      className="case-card-wrapper"
     >
       {/* Gradient border glow */}
       <div
-        className="absolute -inset-0.5 rounded-[18px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"
-        style={{ background: `linear-gradient(135deg, ${meta.color}60, transparent, ${meta.color}30)` }}
+        className="case-card-glow"
+        style={{ background: `linear-gradient(135deg, ${meta.color}60, transparent, ${meta.color}30)`, opacity: isHovered ? 1 : 0 }}
       />
 
       {/* Card body */}
-      <div className="relative rounded-[16px] overflow-hidden border border-white/6 bg-[#0a1119] group-hover:border-white/12 transition-all duration-300"
-        style={{ boxShadow: isHovered ? `0 20px 60px rgba(0,0,0,0.6), 0 0 30px ${meta.color}15` : '0 4px 20px rgba(0,0,0,0.4)' }}
+      <div className="case-card"
+        style={{ boxShadow: isHovered ? `0 20px 60px rgba(0,0,0,0.6), 0 0 30px ${meta.color}15` : '0 4px 20px rgba(0,0,0,0.4)', borderColor: isHovered ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.06)' }}
       >
         {/* Top accent strip */}
-        <div className="h-0.5 w-full" style={{ background: `linear-gradient(90deg, transparent, ${meta.color}, transparent)`, opacity: isHovered ? 1 : 0.3, transition: 'opacity 0.3s' }} />
+        <div className="case-accent-strip" style={{ background: `linear-gradient(90deg, transparent, ${meta.color}, transparent)`, opacity: isHovered ? 1 : 0.3 }} />
 
         {/* Case number watermark */}
-        <div className="absolute top-4 right-4 font-display text-[80px] leading-none font-bold opacity-[0.035] text-white select-none pointer-events-none">
+        <div className="case-watermark">
           {String(index + 1).padStart(2, '0')}
         </div>
 
         {/* Header zone */}
-        <div className="relative px-5 pt-5 pb-4">
+        <div className="case-card-header">
           {/* Difficulty badge */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="case-badge-row">
             <span
-              className="text-[9px] font-mono font-bold px-2.5 py-1 rounded-md tracking-widest border"
+              className="difficulty-badge"
               style={{ color: meta.color, background: meta.bg, borderColor: meta.border }}
             >
               {meta.label}
             </span>
-            <div className="flex items-center gap-1.5 text-[10px] text-slate-600 font-mono">
+            <div className="time-badge">
               <Clock size={10} />
               {Math.floor(caseData.timeLimit / 60)}m
             </div>
@@ -539,35 +527,35 @@ function PremiumCaseCard({ caseData, index, isHovered, onHover, onLeave, onSelec
           <motion.div
             animate={isHovered ? { y: -4, scale: 1.08 } : { y: 0, scale: 1 }}
             transition={{ type: 'spring', damping: 15, stiffness: 200 }}
-            className="text-5xl mb-4 block"
-            style={{ filter: isHovered ? `drop-shadow(0 0 16px ${meta.color}80)` : 'none', transition: 'filter 0.3s' }}
+            className="case-emoji"
+            style={{ filter: isHovered ? `drop-shadow(0 0 16px ${meta.color}80)` : 'none' }}
           >
             {caseData.emoji}
           </motion.div>
 
           {/* Case title */}
-          <h3 className="font-display text-xl text-white tracking-wide mb-1 leading-tight">
+          <h3 className="case-title">
             {caseData.title.toUpperCase()}
           </h3>
-          <p className="text-xs text-slate-500 mb-3 font-medium">{caseData.subtitle}</p>
+          <p className="case-subtitle">{caseData.subtitle}</p>
 
           {/* Location chip */}
-          <div className="inline-flex items-center gap-1.5 text-[10px] text-slate-500 bg-white/3 border border-white/6 rounded-md px-2 py-1">
+          <div className="location-chip">
             <span>📍</span>{caseData.location}
           </div>
         </div>
 
         {/* Divider */}
-        <div className="mx-5 h-px bg-white/5" />
+        <div className="case-divider" />
 
         {/* Body */}
-        <div className="px-5 py-4">
-          <p className="text-xs text-slate-500 leading-relaxed line-clamp-3 mb-4">
+        <div className="case-card-body">
+          <p className="case-description">
             {caseData.description}
           </p>
 
           {/* Evidence/Suspect chips */}
-          <div className="flex gap-2 mb-4">
+          <div className="case-chips-row">
             <InfoChip icon="🧩" value={caseData.suspects.length} label="Suspects" color={meta.color} />
             <InfoChip icon="🔎" value={caseData.evidence.length} label="Evidence" color={meta.color} />
             <InfoChip icon="📍" value={caseData.timeline.length} label="Events" color={meta.color} />
@@ -578,14 +566,14 @@ function PremiumCaseCard({ caseData, index, isHovered, onHover, onLeave, onSelec
             initial={false}
             animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 4 }}
             transition={{ duration: 0.2 }}
-            className="flex items-center justify-between"
+            className="case-cta-row"
           >
-            <span className="text-[11px] font-semibold font-mono tracking-wider uppercase" style={{ color: meta.color }}>
+            <span className="case-cta-text" style={{ color: meta.color }}>
               Open Case File
             </span>
             <motion.div
               animate={{ x: isHovered ? 4 : 0 }}
-              className="w-6 h-6 rounded-full flex items-center justify-center"
+              className="case-cta-icon"
               style={{ background: meta.bg, border: `1px solid ${meta.border}` }}
             >
               <ChevronRight size={12} style={{ color: meta.color }} />
@@ -597,7 +585,7 @@ function PremiumCaseCard({ caseData, index, isHovered, onHover, onLeave, onSelec
         <motion.div
           animate={{ scaleX: isHovered ? 1 : 0 }}
           transition={{ duration: 0.3 }}
-          className="h-0.5 origin-left"
+          className="case-hover-line"
           style={{ background: `linear-gradient(90deg, ${meta.color}, transparent)` }}
         />
       </div>
@@ -607,10 +595,10 @@ function PremiumCaseCard({ caseData, index, isHovered, onHover, onLeave, onSelec
 
 function InfoChip({ icon, value, label, color }) {
   return (
-    <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/3 border border-white/5 flex-1 justify-center">
-      <span className="text-[10px]">{icon}</span>
-      <span className="text-[10px] font-bold font-mono" style={{ color }}>{value}</span>
-      <span className="text-[9px] text-slate-700 hidden sm:block">{label}</span>
+    <div className="info-chip">
+      <span className="info-icon">{icon}</span>
+      <span className="info-value" style={{ color }}>{value}</span>
+      <span className="info-label">{label}</span>
     </div>
   );
 }

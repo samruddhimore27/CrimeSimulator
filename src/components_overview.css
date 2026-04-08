@@ -1,0 +1,46 @@
+/* ── CaseOverview ────────────────────────────────────── */
+
+.overview-meta-chips {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.overview-stats-grid {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.overview-description {
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin-bottom: 20px;
+}
+
+.overview-stat-box {
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  flex: 1;
+  margin: 0 8px;
+}
+
+/* Base class for cards if generic glass-card was requested to be dark */
+.glass-card {
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 1rem;
+}

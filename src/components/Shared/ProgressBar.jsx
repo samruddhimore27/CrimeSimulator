@@ -2,27 +2,21 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 export function ProgressBar({ value = 0, label, color = 'purple', showPercent = true }) {
-  const colors = {
-    purple: 'bg-purple-500',
-    amber:  'bg-amber-500',
-    red:    'bg-red-500',
-    emerald: 'bg-emerald-500',
-    cyan:   'bg-cyan-500',
-  };
+  const barClass = `progress-fill color-${color}`;
 
   return (
-    <div className="w-full">
+    <div className="progress-container">
       {(label || showPercent) && (
-        <div className="flex justify-between items-center mb-1.5">
-          {label && <span className="text-xs text-slate-400 font-medium">{label}</span>}
+        <div className="progress-header">
+          {label && <span className="progress-label">{label}</span>}
           {showPercent && (
-            <span className="text-xs font-mono text-slate-300">{Math.round(value)}%</span>
+            <span className="progress-percent">{Math.round(value)}%</span>
           )}
         </div>
       )}
-      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+      <div className="progress-track">
         <motion.div
-          className={`h-full ${colors[color]} rounded-full`}
+          className={barClass}
           initial={{ width: 0 }}
           animate={{ width: `${Math.min(100, value)}%` }}
           transition={{ duration: 0.5, ease: 'easeOut' }}

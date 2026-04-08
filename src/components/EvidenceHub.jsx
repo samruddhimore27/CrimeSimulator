@@ -21,9 +21,6 @@ export function EvidenceHub() {
   if (!currentCase) return null;
 
   const allEvidence = currentCase.evidence;
-  const typeFilter =
-    activeEvidenceTab === 'photos' ? 'photo' :
-    activeEvidenceTab === 'evidence' ? null : null;
 
   const visibleEvidence =
     activeEvidenceTab === 'evidence' ? allEvidence :
@@ -33,20 +30,20 @@ export function EvidenceHub() {
   const onBoardIds = new Set(boardItems.map(b => b.evidenceId));
 
   return (
-    <div className="flex flex-col h-full bg-[#0a0f1a] border-r border-white/5">
+    <div className="hub-container">
       {/* Hub Header */}
-      <div className="px-4 pt-4 pb-3 border-b border-white/5">
-        <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse inline-block"></span>
+      <div className="hub-header">
+        <h3 className="hub-title">
+          <span className="hub-title-dot pulse-glow"></span>
           Evidence Hub
         </h3>
-        <p className="text-xs text-slate-500 mt-0.5">
+        <p className="hub-subtitle">
           {discoveredEvidenceIds.length}/{allEvidence.length} items discovered
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-white/5">
+      <div className="hub-tabs">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeEvidenceTab === tab.id;
@@ -54,9 +51,7 @@ export function EvidenceHub() {
             <button
               key={tab.id}
               onClick={() => setActiveEvidenceTab(tab.id)}
-              className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-medium transition-colors relative ${
-                isActive ? 'text-purple-400 tab-active' : 'text-slate-500 hover:text-slate-300'
-              }`}
+              className={`hub-tab ${isActive ? 'active' : ''}`}
             >
               <Icon size={13} />
               {tab.label}
@@ -66,7 +61,7 @@ export function EvidenceHub() {
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+      <div className="hub-content">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeEvidenceTab}
@@ -101,7 +96,7 @@ export function EvidenceHub() {
 
 function EvidenceList({ evidence, discoveredIds, onBoardIds, expandedId, setExpandedId, onDiscover, onAddToBoard }) {
   return (
-    <div className="space-y-2">
+    <div className="evidence-list-spaced">
       {evidence.map((item, i) => {
         const isDiscovered = discoveredIds.includes(item.id);
         const isExpanded   = expandedId === item.id;
@@ -113,11 +108,7 @@ function EvidenceList({ evidence, discoveredIds, onBoardIds, expandedId, setExpa
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className={`rounded-xl border transition-all duration-200 overflow-hidden ${
-              isDiscovered
-                ? 'border-purple-500/25 bg-purple-500/5 hover:border-purple-500/40'
-                : 'border-white/5 bg-white/2 opacity-60'
-            }`}
+            className={`evidence-item-card ${isDiscovered ? 'discovered' : 'locked'}`}
           >
             {/* Evidence card header */}
             <button
@@ -128,18 +119,14 @@ function EvidenceList({ evidence, discoveredIds, onBoardIds, expandedId, setExpa
                   setExpandedId(isExpanded ? null : item.id);
                 }
               }}
-              className="w-full flex items-center gap-3 p-3 text-left"
+              className="evidence-item-btn"
             >
-              <div
-                className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-lg ${
-                  isDiscovered ? 'bg-purple-500/15' : 'bg-white/4'
-                }`}
-              >
-                {isDiscovered ? item.icon : <Lock size={14} className="text-slate-600" />}
+              <div className={`evidence-icon-bg ${isDiscovered ? 'discovered' : 'locked'}`}>
+                {isDiscovered ? item.icon : <Lock size={14} className="locked-icon" />}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className={`text-xs font-semibold truncate ${isDiscovered ? 'text-slate-200' : 'text-slate-600'}`}>
+              <div className="evidence-item-info">
+                <div className="evidence-item-title-row">
+                  <span className={`evidence-item-title ${isDiscovered ? 'discovered' : 'locked'}`}>
                     {isDiscovered ? item.title : '??? Locked'}
                   </span>
                   {isDiscovered && (
@@ -147,12 +134,12 @@ function EvidenceList({ evidence, discoveredIds, onBoardIds, expandedId, setExpa
                   )}
                 </div>
                 {isDiscovered && (
-                  <p className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">{item.description}</p>
+                  <p className="evidence-item-desc">{item.description}</p>
                 )}
               </div>
               <ChevronRight
                 size={12}
-                className={`text-slate-600 shrink-0 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                className={`evidence-item-arrow ${isExpanded ? 'expanded' : ''}`}
               />
             </button>
 
@@ -164,9 +151,9 @@ function EvidenceList({ evidence, discoveredIds, onBoardIds, expandedId, setExpa
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="px-3 pb-3"
+                  className="evidence-expanded-content"
                 >
-                  <p className="text-xs text-slate-300 leading-relaxed mb-3 p-3 bg-white/3 rounded-lg border border-white/5">
+                  <p className="evidence-expanded-desc">
                     {item.description}
                   </p>
                   {!onBoard ? (
@@ -174,14 +161,14 @@ function EvidenceList({ evidence, discoveredIds, onBoardIds, expandedId, setExpa
                       size="sm"
                       variant="outline"
                       onClick={() => onAddToBoard(item.id)}
-                      className="w-full text-[11px]"
+                      className="w-full text-xs"
                       icon={<Eye size={11} />}
                     >
                       Pin to Board
                     </Button>
                   ) : (
-                    <div className="text-center text-[11px] text-emerald-400 font-medium flex items-center justify-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                    <div className="evidence-onboard">
+                      <span className="onboard-dot animate-pulse"></span>
                       On Investigation Board
                     </div>
                   )}
@@ -199,7 +186,7 @@ function EvidenceList({ evidence, discoveredIds, onBoardIds, expandedId, setExpa
 
 function TimelineView({ timeline, suspects }) {
   return (
-    <div className="space-y-0">
+    <div className="timeline-list-spaced">
       {timeline.map((event, i) => {
         const suspect = suspects.find(s => s.id === event.suspect);
         return (
@@ -208,26 +195,26 @@ function TimelineView({ timeline, suspects }) {
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.06 }}
-            className="flex gap-3"
+            className="timeline-item"
           >
             {/* Timeline spine */}
-            <div className="flex flex-col items-center">
-              <div className="w-2 h-2 rounded-full bg-purple-500 mt-1 shrink-0 ring-2 ring-purple-500/20"></div>
+            <div className="timeline-spine">
+              <div className="timeline-dot"></div>
               {i < timeline.length - 1 && (
-                <div className="w-px flex-1 bg-white/8 my-1"></div>
+                <div className="timeline-line"></div>
               )}
             </div>
 
-            <div className="pb-4 flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-mono text-amber-400 font-semibold">{event.time}</span>
+            <div className="timeline-content">
+              <div className="timeline-header">
+                <span className="timeline-time">{event.time}</span>
                 {suspect && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/20">
+                  <span className="timeline-suspect-badge">
                     {suspect.name}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">{event.event}</p>
+              <p className="timeline-event-text">{event.event}</p>
             </div>
           </motion.div>
         );
@@ -240,24 +227,24 @@ function TimelineView({ timeline, suspects }) {
 
 function SuspectMiniList({ suspects }) {
   return (
-    <div className="space-y-2">
+    <div className="suspect-mini-list-spaced">
       {suspects.map((s, i) => (
         <motion.div
           key={s.id}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.08 }}
-          className="p-3 rounded-xl border border-white/8 bg-white/2"
+          className="suspect-mini-card"
           style={{ borderLeftColor: s.color, borderLeftWidth: 2 }}
         >
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xl">{s.photo}</span>
-            <div>
-              <div className="text-xs font-semibold text-slate-200">{s.name}</div>
-              <div className="text-[10px] text-slate-500">{s.occupation}</div>
+          <div className="suspect-mini-header">
+            <span className="suspect-mini-photo">{s.photo}</span>
+            <div className="suspect-mini-info">
+              <div className="suspect-mini-name">{s.name}</div>
+              <div className="suspect-mini-occupation">{s.occupation}</div>
             </div>
           </div>
-          <p className="text-[10px] text-slate-400 line-clamp-2">{s.alibi}</p>
+          <p className="suspect-mini-alibi">{s.alibi}</p>
         </motion.div>
       ))}
     </div>
@@ -267,15 +254,9 @@ function SuspectMiniList({ suspects }) {
 // ── Type Badge ────────────────────────────────────────────────────────────────
 
 function TypeBadge({ type }) {
-  const colors = {
-    physical: 'bg-amber-500/15 text-amber-400',
-    document: 'bg-blue-500/15 text-blue-400',
-    witness:  'bg-emerald-500/15 text-emerald-400',
-    photo:    'bg-pink-500/15 text-pink-400',
-    digital:  'bg-cyan-500/15 text-cyan-400',
-  };
+  const badgeClass = `badge type-${type}`;
   return (
-    <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${colors[type] || 'bg-white/10 text-white'}`}>
+    <span className={badgeClass}>
       {type}
     </span>
   );
