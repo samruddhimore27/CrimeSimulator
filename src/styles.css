@@ -199,22 +199,49 @@ p {
 .case-selection {
   position: relative;
   z-index: 10;
-  padding: 0 24px 32px;
-  max-width: 1152px;
-  margin: 0 auto;
+  padding: 0 0 48px;
   width: 100%;
 }
 
+/* ── Horizontal scroll track ── */
 .case-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 32px; /* Increased gap */
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 12px 40px 24px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  /* Hide scrollbar on Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139,92,246,0.3) transparent;
 }
 
-@media (min-width: 768px) {
-  .case-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+.case-grid:active { cursor: grabbing; }
+
+/* Webkit scrollbar styling */
+.case-grid::-webkit-scrollbar {
+  height: 4px;
+}
+.case-grid::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 0 40px;
+}
+.case-grid::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.35);
+  border-radius: 4px;
+}
+.case-grid::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
+}
+
+/* Each card fills viewport minus peek */
+.case-card-wrapper {
+  flex: 0 0 340px;
+  scroll-snap-align: start;
+  will-change: transform;
 }
 
 .case-card {
@@ -265,14 +292,18 @@ p {
   flex-direction: column;
   height: 100vh;
   background-color: var(--bg-primary);
+  background-image:
+    linear-gradient(rgba(139,92,246,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,92,246,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
 }
 
 .game-main-content {
   display: flex;
   flex: 1;
   overflow: hidden;
-  gap: 24px;
-  padding: 24px;
+  gap: 14px;
+  padding: 14px 16px 16px;
 }
 
 @media (max-width: 1024px) {
@@ -285,10 +316,11 @@ p {
 .panel {
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: linear-gradient(160deg, rgba(10,14,22,0.98) 0%, rgba(6,9,16,0.99) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
 }
 
 /* ── Specific Panel adjustments ───────────────────────── */

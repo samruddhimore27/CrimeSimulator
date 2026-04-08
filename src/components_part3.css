@@ -236,11 +236,8 @@
 
 /* ── Guide Dialog / Character ───────────────────────── */
 
+/* guide-char-wrap — positioning now handled inline by the draggable motion.div */
 .guide-char-wrap {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 50;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -257,17 +254,17 @@
   padding: 0;
   overflow: hidden;
   position: relative;
-  border-radius: 16px;
+  border-radius: 14px;
   width: 85vw;
-  max-width: 600px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 380px;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4);
   z-index: 50;
   border: 1px solid rgba(139, 92, 246, 0.3);
   background-color: #0f172a;
 }
 
 @media(min-width: 768px) {
-  .guide-dialog { width: 600px; }
+  .guide-dialog { width: 380px; }
 }
 
 .guide-dialog-arrow {
@@ -415,22 +412,22 @@
 
 .gc-avatar-box {
   position: relative;
-  width: 160px;
-  height: 160px;
-  border-radius: 16px;
+  width: 100px;
+  height: 100px;
+  border-radius: 14px;
   background: linear-gradient(to bottom right, #4c1d95, #0f172a);
   border: 1px solid #8b5cf6;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 40px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 28px rgba(139, 92, 246, 0.35);
   z-index: 10;
   overflow: hidden;
   transition: border-color 0.2s;
 }
 
 @media(min-width: 768px) {
-  .gc-avatar-box { width: 224px; height: 224px; }
+  .gc-avatar-box { width: 120px; height: 120px; }
 }
 
 .gc-btn-active:hover .gc-avatar-box { border-color: #a78bfa; }
@@ -463,8 +460,8 @@
   position: absolute;
   z-index: 20;
   color: #c4b5fd;
-  top: 12px;
-  right: 12px;
+  top: 6px;
+  right: 6px;
 }
 
 .gc-prompt {

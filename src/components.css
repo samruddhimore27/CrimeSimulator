@@ -79,7 +79,8 @@
   width: 700px;
   height: 700px;
   border-radius: 50%;
-  border: 1px solid rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 80px rgba(139, 92, 246, 0.04) inset;
 }
 
 .hero-ring-outer {
@@ -87,7 +88,7 @@
   width: 500px;
   height: 500px;
   border-radius: 50%;
-  border: 1px solid rgba(139, 92, 246, 0.04);
+  border: 1px dashed rgba(139, 92, 246, 0.09);
 }
 
 .hero-badge-pulse {
@@ -99,9 +100,11 @@
 }
 
 .hero-emoji {
-  font-size: 72px;
-  margin-bottom: 24px;
+  font-size: 80px;
+  margin-bottom: 20px;
   display: inline-block;
+  cursor: default;
+  user-select: none;
 }
 
 .title-word {
@@ -167,7 +170,8 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
+  padding: 0 40px;
 }
 
 .case-line-left, .case-line-right {
@@ -291,17 +295,16 @@
 
 /* Case Card Specifics */
 
-.case-card-wrapper {
-  position: relative;
-  cursor: pointer;
-}
+/* case-card-wrapper is defined in styles.css */
+
 
 .case-card-glow {
   position: absolute;
   inset: -2px;
   border-radius: 18px;
-  transition: opacity 0.5s;
-  filter: blur(4px);
+  transition: opacity 0.4s ease;
+  filter: blur(6px);
+  z-index: 0;
 }
 
 .case-accent-strip {
@@ -352,9 +355,11 @@
 }
 
 .case-emoji {
-  font-size: 48px;
+  font-size: 52px;
   margin-bottom: 16px;
   display: block;
+  will-change: transform;
+  user-select: none;
 }
 
 .case-title {
@@ -398,6 +403,7 @@
   margin-bottom: 16px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -439,12 +445,13 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background: linear-gradient(180deg, #080d16 0%, #060a12 100%);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, #070c14 0%, #050810 100%);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.6);
   flex-shrink: 0;
   position: relative;
+  z-index: 30;
 }
 
 .game-header-glow-line {
@@ -453,47 +460,96 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(139,92,246,0.5), rgba(6,182,212,0.4), transparent);
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(139,92,246,0.8) 20%,
+    rgba(6,182,212,0.6) 50%,
+    rgba(239,68,68,0.5) 80%,
+    transparent 100%
+  );
+  animation: border-move 4s ease infinite;
+  background-size: 200% 100%;
+}
+
+/* Scanline overlay on game header */
+.game-header-scanline {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
 .game-header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .game-exit-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 8px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   background-color: transparent;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .game-exit-btn:hover {
-  color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.12);
-  background-color: rgba(255, 255, 255, 0.04);
+  color: rgba(255,255,255,0.8);
+  border-color: rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* LIVE chip */
+.game-live-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.25);
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.12em;
+  color: #f87171;
+}
+
+.game-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: pulse-glow 1.5s infinite;
 }
 
 .game-header-divider {
   width: 1px;
-  height: 20px;
-  background-color: rgba(255, 255, 255, 0.08);
+  height: 18px;
+  background-color: rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
 }
 
 .game-case-badge {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
 }
 
@@ -501,41 +557,43 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  background-color: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.3);
   flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(139,92,246,0.12);
 }
 
-.game-case-info {
-  min-width: 0;
-}
+.game-case-info { min-width: 0; }
 
 .game-case-title {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 800;
   color: #e2e8f0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: var(--font-display);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
 }
 
 .game-case-location {
   font-size: 9px;
-  color: #475569;
+  color: #3d4f6a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: var(--font-mono);
+  letter-spacing: 0.05em;
 }
 
 .game-header-centre {
   flex: 1;
-  max-width: 384px;
+  max-width: 400px;
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 768px) {
@@ -548,38 +606,63 @@
   gap: 10px;
   margin-left: auto;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
+/* Accuse button — upgraded */
 .game-accuse-btn {
-  background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.08));
-  border-color: rgba(239,68,68,0.35);
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   color: #fff;
   cursor: pointer;
   transition: all 0.2s ease;
+  background: linear-gradient(135deg, rgba(220,38,38,0.25), rgba(239,68,68,0.12));
+  border: 1px solid rgba(239,68,68,0.4);
+  overflow: hidden;
 }
 
 .game-accuse-btn:not(.disabled) {
-  box-shadow: 0 0 16px rgba(239,68,68,0.15);
+  box-shadow: 0 0 20px rgba(239,68,68,0.2), inset 0 1px 0 rgba(255,255,255,0.07);
+}
+
+.game-accuse-btn:not(.disabled):hover {
+  background: linear-gradient(135deg, rgba(220,38,38,0.4), rgba(239,68,68,0.2));
+  box-shadow: 0 0 28px rgba(239,68,68,0.35);
+  border-color: rgba(239,68,68,0.6);
 }
 
 .game-accuse-btn.disabled {
-  opacity: 0.3;
+  opacity: 0.25;
   cursor: not-allowed;
+  border-color: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
 }
 
-.accuse-icon { color: #f87171; }
-.accuse-text { font-family: var(--font-display); letter-spacing: 0.05em; }
+.accuse-icon { color: #f87171; flex-shrink: 0; }
+.accuse-text { font-family: var(--font-display); letter-spacing: 0.08em; }
 
-.game-panel-side {
-  width: 320px;
+.accuse-ready-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #f87171;
   flex-shrink: 0;
+  box-shadow: 0 0 6px #ef4444;
+}
+
+/* Panel sizes */
+.game-panel-side {
+  width: 300px;
+  flex-shrink: 0;
+  position: relative;
 }
 
 .game-panel-centre {
@@ -587,4 +670,34 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+/* Coloured top accent lines per panel */
+.panel-top-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 5;
+  border-radius: 2px 2px 0 0;
+}
+
+.panel-accent-purple {
+  background: linear-gradient(90deg, transparent, rgba(139,92,246,0.8), transparent);
+}
+
+.panel-accent-red {
+  background: linear-gradient(90deg, transparent, rgba(239,68,68,0.7), transparent);
+}
+
+/* Elevated panel styles */
+.game-panel-evidence {
+  border-top: none !important;
+  box-shadow: 0 0 0 1px rgba(139,92,246,0.12), 0 8px 32px rgba(0,0,0,0.4) !important;
+}
+
+.game-panel-suspects {
+  border-top: none !important;
+  box-shadow: 0 0 0 1px rgba(239,68,68,0.1), 0 8px 32px rgba(0,0,0,0.4) !important;
 }
