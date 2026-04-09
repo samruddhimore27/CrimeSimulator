@@ -29,6 +29,11 @@ const INITIAL_STATE = {
   // UI
   activeEvidenceTab: 'evidence',
   showBriefing: true,
+
+  // Solved cases (persisted across home navigation)
+  solvedCaseIds: [],
+  // Flag: if true, current run is a replay — score won't be submitted
+  isReplay: false,
 };
 
 export const useGameStore = create((set, get) => ({
@@ -36,8 +41,8 @@ export const useGameStore = create((set, get) => ({
 
   // ── NAVIGATION ──────────────────────────────────────────
 
-  goHome: () => set({ ...INITIAL_STATE }),
-  goLeaderboard: () => set({ ...INITIAL_STATE, gamePhase: 'leaderboard' }),
+  goHome: () => set((state) => ({ ...INITIAL_STATE, solvedCaseIds: state.solvedCaseIds })),
+  goLeaderboard: () => set((state) => ({ ...INITIAL_STATE, solvedCaseIds: state.solvedCaseIds, gamePhase: 'leaderboard' })),
 
   selectCase: (caseId) => {
     const caseData = getCaseById(caseId);
@@ -45,7 +50,7 @@ export const useGameStore = create((set, get) => ({
       .filter((e) => e.unlocked)
       .map((e) => e.id);
 
-    set({
+    set((state) => ({
       currentCaseId: caseId,
       currentCase: caseData,
       gamePhase: 'briefing',
@@ -60,7 +65,36 @@ export const useGameStore = create((set, get) => ({
       scoreBreakdown: null,
       activeEvidenceTab: 'evidence',
       showBriefing: true,
-    });
+      solvedCaseIds: state.solvedCaseIds,
+      isReplay: false,
+    }));
+  },
+
+  // Start a replay — same as selectCase but marks isReplay = true
+  replayCase: (caseId) => {
+    const caseData = getCaseById(caseId);
+    const initialEvidence = caseData.evidence
+      .filter((e) => e.unlocked)
+      .map((e) => e.id);
+
+    set((state) => ({
+      currentCaseId: caseId,
+      currentCase: caseData,
+      gamePhase: 'briefing',
+      discoveredEvidenceIds: initialEvidence,
+      boardItems: [],
+      connections: [],
+      activeSuspectId: null,
+      accusedSuspectId: null,
+      timeRemaining: caseData.timeLimit,
+      timerRunning: false,
+      score: 0,
+      scoreBreakdown: null,
+      activeEvidenceTab: 'evidence',
+      showBriefing: true,
+      solvedCaseIds: state.solvedCaseIds,
+      isReplay: true,
+    }));
   },
 
   startGame: () => {
@@ -154,7 +188,7 @@ export const useGameStore = create((set, get) => ({
   // ── GAME END ────────────────────────────────────────────
 
   makeAccusation: (suspectId) => {
-    const { currentCase, timeRemaining, discoveredEvidenceIds, connections } = get();
+    const { currentCase, timeRemaining, discoveredEvidenceIds, connections, isReplay } = get();
     const isCorrect = suspectId === currentCase.correctSuspectId;
 
     const evidencePoints = discoveredEvidenceIds.length * 100;
@@ -163,7 +197,7 @@ export const useGameStore = create((set, get) => ({
     const accuracyBonus = isCorrect ? 500 : 0;
     const totalScore = evidencePoints + connectionPoints + timeBonus + accuracyBonus;
 
-    set({
+    set((state) => ({
       accusedSuspectId: suspectId,
       timerRunning: false,
       gamePhase: 'result',
@@ -175,11 +209,16 @@ export const useGameStore = create((set, get) => ({
         accuracyBonus,
         isCorrect,
       },
-    });
+      // Mark this case as solved (only on correct non-replay)
+      solvedCaseIds:
+        isCorrect && !isReplay && !state.solvedCaseIds.includes(currentCase.id)
+          ? [...state.solvedCaseIds, currentCase.id]
+          : state.solvedCaseIds,
+    }));
 
-    // Sync to Supabase
+    // Sync to Supabase — skip if this is a replay
     const user = useAuthStore.getState().user;
-    if (user) {
+    if (user && !isReplay) {
       (async () => {
         try {
           if (isCorrect) {

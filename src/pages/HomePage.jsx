@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
-import { Shield, Clock, ChevronRight, Zap, Eye, Lock, Star, Search, AlertTriangle, FileText, Trophy } from 'lucide-react';
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
+import { Shield, Clock, ChevronRight, Zap, Eye, Lock, Star, Search, AlertTriangle, FileText, Trophy, CheckCircle, RefreshCw, X } from 'lucide-react';
 import { useGameStore } from '../store/gameStore';
 import { useAuthStore } from '../store/authStore';
 import { CASES } from '../data/cases';
@@ -54,9 +54,10 @@ function CursorSpotlight() {
 }
 
 export function HomePage() {
-  const { selectCase, goLeaderboard } = useGameStore();
+  const { selectCase, replayCase, goLeaderboard, solvedCaseIds } = useGameStore();
   const { user, openAuthModal } = useAuthStore();
   const [hoveredCase, setHoveredCase] = useState(null);
+  const [alreadySolvedCase, setAlreadySolvedCase] = useState(null);
   const heroRef = useRef(null);
   const scrollRef = useRef(null);
 
@@ -87,11 +88,31 @@ export function HomePage() {
       openAuthModal();
       return;
     }
+    if (solvedCaseIds.includes(caseId)) {
+      const caseObj = CASES.find((c) => c.id === caseId);
+      setAlreadySolvedCase(caseObj);
+      return;
+    }
     selectCase(caseId);
   };
 
+  const handleReplayConfirm = () => {
+    if (!alreadySolvedCase) return;
+    replayCase(alreadySolvedCase.id);
+    setAlreadySolvedCase(null);
+  };
+
+  const handleReplayCancel = () => setAlreadySolvedCase(null);
+
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#030508]">
+
+      {/* ── ALREADY SOLVED MODAL ── */}
+      <AlreadySolvedModal
+        caseData={alreadySolvedCase}
+        onConfirm={handleReplayConfirm}
+        onCancel={handleReplayCancel}
+      />
 
       {/* ── CURSOR GLOW ── */}
       <CursorSpotlight />
@@ -357,6 +378,7 @@ export function HomePage() {
               caseData={c}
               index={i}
               isHovered={hoveredCase === c.id}
+              isSolved={solvedCaseIds.includes(c.id)}
               onHover={() => setHoveredCase(c.id)}
               onLeave={() => setHoveredCase(null)}
               onSelect={() => handleSelectCase(c.id)}
@@ -522,8 +544,156 @@ function AtmosphericBackground() {
   );
 }
 
+// ── ALREADY SOLVED MODAL ─────────────────────────────────────────────────
+function AlreadySolvedModal({ caseData, onConfirm, onCancel }) {
+  return (
+    <AnimatePresence>
+      {caseData && (
+        <motion.div
+          key="already-solved-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onCancel}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(3,5,8,0.82)',
+            backdropFilter: 'blur(8px)',
+          }}
+        >
+          <motion.div
+            key="already-solved-card"
+            initial={{ opacity: 0, scale: 0.88, y: 24 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.88, y: 24 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 240 }}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              width: 'min(420px, 90vw)',
+              background: 'linear-gradient(160deg, rgba(16,14,30,0.98) 0%, rgba(8,6,16,0.99) 100%)',
+              border: '1px solid rgba(16,185,129,0.22)',
+              borderRadius: 20,
+              padding: '36px 32px 28px',
+              boxShadow: '0 0 60px rgba(16,185,129,0.08), 0 32px 80px rgba(0,0,0,0.7)',
+              textAlign: 'center',
+            }}
+          >
+            {/* Close button */}
+            <button
+              onClick={onCancel}
+              style={{
+                position: 'absolute', top: 14, right: 14,
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 8, padding: '4px 6px',
+                cursor: 'pointer', display: 'flex', alignItems: 'center',
+              }}
+            >
+              <X size={14} color="rgba(255,255,255,0.4)" />
+            </button>
+
+            {/* Icon */}
+            <motion.div
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              style={{
+                width: 64, height: 64, borderRadius: '50%',
+                background: 'rgba(16,185,129,0.1)',
+                border: '1px solid rgba(16,185,129,0.3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 20px',
+                boxShadow: '0 0 28px rgba(16,185,129,0.15)',
+              }}
+            >
+              <CheckCircle size={30} color="#10b981" strokeWidth={1.8} />
+            </motion.div>
+
+            {/* Label */}
+            <div style={{
+              fontSize: 10, fontFamily: 'JetBrains Mono, monospace',
+              color: '#10b981', letterSpacing: '0.2em', marginBottom: 10,
+              textTransform: 'uppercase', fontWeight: 700,
+            }}>Case Already Solved</div>
+
+            {/* Title */}
+            <h2 style={{
+              fontSize: 20, fontWeight: 800, color: '#fff',
+              fontFamily: 'Inter, sans-serif', marginBottom: 10, lineHeight: 1.3,
+            }}>
+              {caseData.emoji} {caseData.title}
+            </h2>
+
+            <p style={{
+              fontSize: 13, color: 'rgba(255,255,255,0.45)',
+              lineHeight: 1.65, marginBottom: 6,
+              fontFamily: 'Inter, sans-serif',
+            }}>
+              You've already cracked this case. Want to replay it for fun?
+            </p>
+            <p style={{
+              fontSize: 11, color: 'rgba(239,68,68,0.65)',
+              fontFamily: 'JetBrains Mono, monospace',
+              letterSpacing: '0.06em', marginBottom: 28,
+            }}>
+              ⚠ Score will NOT be added for a replay.
+            </p>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={onCancel}
+                style={{
+                  flex: 1, padding: '11px 0', borderRadius: 10,
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.09)',
+                  color: 'rgba(255,255,255,0.5)',
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
+                  cursor: 'pointer', textTransform: 'uppercase',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                  e.currentTarget.style.color = 'rgba(255,255,255,0.75)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                  e.currentTarget.style.color = 'rgba(255,255,255,0.5)';
+                }}
+              >
+                Cancel
+              </button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={onConfirm}
+                style={{
+                  flex: 1, padding: '11px 0', borderRadius: 10,
+                  background: 'linear-gradient(135deg, rgba(16,185,129,0.18), rgba(16,185,129,0.08))',
+                  border: '1px solid rgba(16,185,129,0.35)',
+                  color: '#10b981',
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
+                  cursor: 'pointer', textTransform: 'uppercase',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  boxShadow: '0 0 20px rgba(16,185,129,0.06)',
+                }}
+              >
+                <RefreshCw size={12} />
+                Yes, Replay
+              </motion.button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 // ── PREMIUM CASE CARD ─────────────────────────────────────────────────────
-function PremiumCaseCard({ caseData, index, isHovered, onHover, onLeave, onSelect }) {
+function PremiumCaseCard({ caseData, index, isHovered, isSolved, onHover, onLeave, onSelect }) {
   const meta = DIFFICULTY_META[caseData.difficulty] || DIFFICULTY_META.Hard;
 
   return (
@@ -588,9 +758,36 @@ function PremiumCaseCard({ caseData, index, isHovered, onHover, onLeave, onSelec
             <span className="difficulty-badge" style={{ color: meta.color, background: 'rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
               {meta.label}
             </span>
+<<<<<<< Updated upstream
             <div className="flex items-center gap-1.5 text-[10px] text-white/90 font-mono bg-black/50 px-2.5 py-1.5 rounded-lg border border-white/10 backdrop-blur-sm">
               <Clock size={10} />
               {Math.floor(caseData.timeLimit / 60)}m
+=======
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {isSolved && (
+                <motion.span
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 3,
+                    fontSize: 9, fontFamily: 'JetBrains Mono, monospace',
+                    fontWeight: 700, letterSpacing: '0.12em',
+                    color: '#10b981',
+                    background: 'rgba(16,185,129,0.1)',
+                    border: '1px solid rgba(16,185,129,0.3)',
+                    borderRadius: 5, padding: '2px 6px',
+                  }}
+                >
+                  <CheckCircle size={8} />
+                  SOLVED
+                </motion.span>
+              )}
+              <div className="flex items-center gap-1.5 text-[10px] text-slate-600 font-mono">
+                <Clock size={10} />
+                {Math.floor(caseData.timeLimit / 60)}m
+              </div>
+>>>>>>> Stashed changes
             </div>
           </div>
 
@@ -634,13 +831,17 @@ function PremiumCaseCard({ caseData, index, isHovered, onHover, onLeave, onSelec
             transition={{ duration: 0.25 }}
             className="case-cta-row"
           >
-            <span className="case-cta-text" style={{ color: meta.color }}>Open Case File</span>
+            <span className="case-cta-text" style={{ color: meta.color }}>
+              {isSolved ? 'Replay Case' : 'Open Case File'}
+            </span>
             <motion.div
               animate={{ x: isHovered ? 4 : 0 }}
               className="w-6 h-6 rounded-full flex items-center justify-center"
               style={{ background: meta.bg, border: `1px solid ${meta.border}` }}
             >
-              <ChevronRight size={12} style={{ color: meta.color }} />
+              {isSolved
+                ? <RefreshCw size={12} style={{ color: meta.color }} />
+                : <ChevronRight size={12} style={{ color: meta.color }} />}
             </motion.div>
           </motion.div>
         </div>
